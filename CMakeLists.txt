@@ -9,7 +9,7 @@ include(CheckLanguage)
 check_language(CUDA)
 
 set(CMAKE_CXX_STANDARD 20)
-set(CUDA_COMPUTE_CAPABILITY 120)
+set(CUDA_COMPUTE_CAPABILITY 86)
 
 # in debug mode, add debug symbols to device code
 # this disables most optimizations and kills performance
@@ -21,3 +21,7 @@ include_directories(${CUDA_INCLUDE_DIRS})
 include_directories(${PROJECT_SOURCE_DIR}/src)
 # Configure the source file path to be compiled
 aux_source_directory(${PROJECT_SOURCE_DIR}/src SRC)
+
+add_executable(main main.cu ${SRC})
+set_target_properties(sgemm PROPERTIES CUDA_ARCHITECTURES ${CUDA_COMPUTE_CAPABILITY})
+target_link_libraries(sgemm ${CUDA_LIBRARIES} ${CUDA_CUBLAS_LIBRARIES})

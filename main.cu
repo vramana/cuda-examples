@@ -3,6 +3,8 @@
 #include <cstdlib>
 #include <cuda_runtime.h>
 
+#include "add_naive.cuh"
+
 // Simple CUDA error checking macro to keep the example readable.
 #define CUDA_CHECK(call)                                                         \
     do {                                                                         \
