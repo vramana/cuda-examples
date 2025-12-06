@@ -23,5 +23,5 @@ include_directories(${PROJECT_SOURCE_DIR}/src)
 aux_source_directory(${PROJECT_SOURCE_DIR}/src SRC)
 
 add_executable(main main.cu ${SRC})
-set_target_properties(sgemm PROPERTIES CUDA_ARCHITECTURES ${CUDA_COMPUTE_CAPABILITY})
-target_link_libraries(sgemm ${CUDA_LIBRARIES} ${CUDA_CUBLAS_LIBRARIES})
+set_target_properties(main PROPERTIES CUDA_ARCHITECTURES ${CUDA_COMPUTE_CAPABILITY})
+target_link_libraries(main ${CUDA_LIBRARIES} ${CUDA_CUBLAS_LIBRARIES})
