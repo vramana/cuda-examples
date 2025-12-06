@@ -14,13 +14,6 @@
         }                                                                        \
     } while (0)
 
-__global__ void vectorAdd(const float* a, const float* b, float* c, int n) {
-    const int idx = blockIdx.x * blockDim.x + threadIdx.x;
-    if (idx < n) {
-        c[idx] = a[idx] + b[idx];
-    }
-}
-
 int main() {
     constexpr int numElements = 1 << 20;  // 1,048,576 elements
     constexpr size_t bytes = numElements * sizeof(float);
