@@ -2,6 +2,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cuda_runtime.h>
+#include <cublas_v2.h>
 
 #include "add_naive.cuh"
 
@@ -17,53 +18,50 @@
     } while (0)
 
 int main() {
-    constexpr int numElements = 1 << 20;  // 1,048,576 elements
+    constexpr int numElements = 1 << 10;  // 1,048,576 elements
     constexpr size_t bytes = numElements * sizeof(float);
+
+    cublasHandle_t handle;
+
+    cublasCreate(&handle);
 
     // Allocate host memory and initialize input data.
     float* h_a = static_cast<float*>(std::malloc(bytes));
     float* h_b = static_cast<float*>(std::malloc(bytes));
     float* h_c = static_cast<float*>(std::malloc(bytes));
+    float* h_d = static_cast<float*>(std::malloc(bytes));
 
     if (!h_a || !h_b || !h_c) {
         std::fprintf(stderr, "Failed to allocate host vectors.\n");
         return EXIT_FAILURE;
     }
 
-    for (int i = 0; i < numElements; ++i) {
-        h_a[i] = static_cast<float>(i);
-        h_b[i] = static_cast<float>(numElements - i);
-    }
+    randomize_vector(h_a, numElements);
+    randomize_vector(h_b, numElements);
+    zero_init_vector(h_c, numElements);
+    zero_init_vector(h_d, numElements);
 
     // Allocate device memory.
-    float *d_a = nullptr, *d_b = nullptr, *d_c = nullptr;
+    float *d_a = nullptr, *d_b = nullptr, *d_c = nullptr, *d_d = nullptr;
     CUDA_CHECK(cudaMalloc(&d_a, bytes));
     CUDA_CHECK(cudaMalloc(&d_b, bytes));
     CUDA_CHECK(cudaMalloc(&d_c, bytes));
+    CUDA_CHECK(cudaMalloc(&d_d, bytes));
 
     // Copy input data to the GPU.
     CUDA_CHECK(cudaMemcpy(d_a, h_a, bytes, cudaMemcpyHostToDevice));
     CUDA_CHECK(cudaMemcpy(d_b, h_b, bytes, cudaMemcpyHostToDevice));
 
     // Launch kernel with one thread per element.
-    constexpr int threadsPerBlock = 256;
-    const int blocks = (numElements + threadsPerBlock - 1) / threadsPerBlock;
-    vectorAddNaive<<<blocks, threadsPerBlock>>>(d_a, d_b, d_c, numElements);
-    CUDA_CHECK(cudaGetLastError());
+    run_vector_add_naive(d_a, d_b, d_c, numElements);
+    run_vector_add_cublas(&handle, d_a, d_b, d_d, numElements);
 
     // Copy the result back to host.
     CUDA_CHECK(cudaMemcpy(h_c, d_c, bytes, cudaMemcpyDeviceToHost));
+    CUDA_CHECK(cudaMemcpy(h_d, d_d, bytes, cudaMemcpyDeviceToHost));
 
     // Verify results.
-    bool allOk = true;
-    for (int i = 0; i < numElements; ++i) {
-        const float expected = h_a[i] + h_b[i];
-        if (std::abs(h_c[i] - expected) > 1e-5f) {
-            std::fprintf(stderr, "Mismatch at %d: %f vs %f\n", i, h_c[i], expected);
-            allOk = false;
-            break;
-        }
-    }
+    bool allOk = compare_vectors(d_c, d_d, numElements);
 
     if (allOk) {
         std::printf("Vector addition was successful!\n");
@@ -76,6 +74,9 @@ int main() {
     std::free(h_a);
     std::free(h_b);
     std::free(h_c);
+
+
+    cublasDestroy(handle);
 
     return allOk ? EXIT_SUCCESS : EXIT_FAILURE;
 }
