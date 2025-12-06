@@ -15,3 +15,6 @@ run: $(TARGET)
 
 clean:
 	rm -f $(TARGET)
+
+jupyter:
+	uv run --with jupyter jupyter lab --allow-root --no-browser --NotebookApp.token=''
