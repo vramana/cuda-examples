@@ -48,7 +48,7 @@ int main() {
     // Launch kernel with one thread per element.
     constexpr int threadsPerBlock = 256;
     const int blocks = (numElements + threadsPerBlock - 1) / threadsPerBlock;
-    vectorAdd<<<blocks, threadsPerBlock>>>(d_a, d_b, d_c, numElements);
+    vectorAddNaive<<<blocks, threadsPerBlock>>>(d_a, d_b, d_c, numElements);
     CUDA_CHECK(cudaGetLastError());
 
     // Copy the result back to host.
