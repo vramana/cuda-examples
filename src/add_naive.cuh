@@ -30,6 +30,7 @@ void randomize_vector(float *v, int n) {
 
   for (int i = 0; i < n; i++) {
     float tmp = float(rand() % 5) + 0.01 * (rand() % 5);
+    std::printf("tmp: %f\n", tmp);
     tmp = (rand() % 2 == 0) ? tmp : tmp * (-1.0);
     v[i] = n;
   }
