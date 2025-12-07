@@ -41,6 +41,8 @@ int main() {
     zero_init_vector(h_c, numElements);
     zero_init_vector(h_d, numElements);
 
+    std::printf("initialization complete\n");
+
     // Allocate device memory.
     float *d_a = nullptr, *d_b = nullptr, *d_c = nullptr, *d_d = nullptr;
     CUDA_CHECK(cudaMalloc(&d_a, bytes));
@@ -52,13 +54,19 @@ int main() {
     CUDA_CHECK(cudaMemcpy(d_a, h_a, bytes, cudaMemcpyHostToDevice));
     CUDA_CHECK(cudaMemcpy(d_b, h_b, bytes, cudaMemcpyHostToDevice));
 
+    std::printf("launch kernels\n");
+
     // Launch kernel with one thread per element.
     run_vector_add_naive(d_a, d_b, d_c, numElements);
     run_vector_add_cublas(handle, d_a, d_b, d_d, numElements);
 
+    std::printf("completed kernels\n");
+
     // Copy the result back to host.
     CUDA_CHECK(cudaMemcpy(h_c, d_c, bytes, cudaMemcpyDeviceToHost));
     CUDA_CHECK(cudaMemcpy(h_d, d_d, bytes, cudaMemcpyDeviceToHost));
+
+    std::printf("verify results\n");
 
     // Verify results.
     bool allOk = compare_vectors(d_c, d_d, numElements);
