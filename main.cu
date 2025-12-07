@@ -54,7 +54,7 @@ int main() {
 
     // Launch kernel with one thread per element.
     run_vector_add_naive(d_a, d_b, d_c, numElements);
-    run_vector_add_cublas(&handle, d_a, d_b, d_d, numElements);
+    run_vector_add_cublas(handle, d_a, d_b, d_d, numElements);
 
     // Copy the result back to host.
     CUDA_CHECK(cudaMemcpy(h_c, d_c, bytes, cudaMemcpyDeviceToHost));

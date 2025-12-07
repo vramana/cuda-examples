@@ -61,7 +61,7 @@ void run_vector_add_naive(const float* d_a, const float* d_b, float* d_c, int n)
 }
 
 
-void run_vector_add_cublas(cublasHandle_t *handle, const float* d_a, const float* d_b, float* d_c, int n) {
+void run_vector_add_cublas(cublasHandle_t handle, const float* d_a, const float* d_b, float* d_c, int n) {
   const float alpha = 1.0;
   cublasSaxpy(handle, n, &alpha, d_a, 1, d_c, 1);
   cublasSaxpy(handle, n, &alpha, d_b, 1, d_c, 1);
