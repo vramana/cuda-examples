@@ -42,7 +42,7 @@ void print_vector(const float *a, int n) {
   for (int i = 0; i < n; i++) {
     std::printf("%f, ", a[i]);
   }
-  std::count << "\nVector print end\n";
+  std::cout << "\nVector print end\n";
 }
 
 
