@@ -11,6 +11,7 @@
 #include <sys/time.h>
 #include <time.h>
 #include <unistd.h>
+#include <stdlib.h>
 
 __global__ void vector_add_native(const float* a, const float* b, float* c, int n) {
     const int idx = blockIdx.x * blockDim.x + threadIdx.x;
