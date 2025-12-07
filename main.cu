@@ -18,7 +18,7 @@
     } while (0)
 
 int main() {
-    constexpr int numElements = 1 << 10;  // 1,048,576 elements
+    constexpr int numElements = 1 << 4;  // 1,048,576 elements
     constexpr size_t bytes = numElements * sizeof(float);
 
     cublasHandle_t handle;
