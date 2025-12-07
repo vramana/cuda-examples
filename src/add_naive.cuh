@@ -7,6 +7,9 @@
 #include <iomanip>
 #include <cuda_runtime.h>
 #include <cublas_v2.h>
+#include <sys/time.h>
+#include <time.h>
+#include <unistd.h>
 
 __global__ void vector_add_native(const float* a, const float* b, float* c, int n) {
     const int idx = blockIdx.x * blockDim.x + threadIdx.x;
