@@ -69,7 +69,7 @@ int main() {
     std::printf("verify results\n");
 
     // Verify results.
-    bool allOk = compare_vectors(d_c, d_d, numElements);
+    bool allOk = compare_vectors(h_c, h_d, numElements);
 
     if (allOk) {
         std::printf("Vector addition was successful!\n");
