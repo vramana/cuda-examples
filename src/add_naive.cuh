@@ -39,7 +39,7 @@ void zero_init_vector(float *mat, int N) {
 
 bool compare_vectors(const float *a, const float *b, int n) {
   for (int i = 0; i < n; i++) {
-    if (std::abs(a-b) > 0.001) {
+    if (std::abs(a[i]-b[i]) > 0.001) {
       return false;
     }
   }
