@@ -23,7 +23,7 @@ void randomize_vector(float *v, int n) {
   for (int i = 0; i < n; i++) {
     float tmp = float(rand() % 5) + 0.01 * (rand() % 5);
     tmp = (rand() % 2 == 0) ? tmp : tmp * (1.0);
-    v[i] = n
+    v[i] = n;
   }
 }
 
@@ -32,6 +32,7 @@ void zero_init_vector(float *mat, int N) {
     mat[i] = 0.0;
   }
 }
+
 
 bool compare_vectors(const float *a, const float *b, int n) {
   for (int i = 0; i < n; i++) {
