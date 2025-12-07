@@ -41,6 +41,9 @@ int main() {
     zero_init_vector(h_c, numElements);
     zero_init_vector(h_d, numElements);
 
+    print_vector(h_a, numElements);
+    print_vector(h_b, numElements);
+
     std::printf("initialization complete\n");
 
     // Allocate device memory.

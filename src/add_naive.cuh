@@ -37,6 +37,14 @@ void zero_init_vector(float *mat, int N) {
   }
 }
 
+void print_vector(const float *a, int n) {
+  std::cout << "Vector Print: \n";
+  for (int i = 0; i < n; i++) {
+    std::printf("%f, ", a[i]);
+  }
+  std::count << "\nVector print end\n";
+}
+
 
 bool compare_vectors(const float *a, const float *b, int n) {
   for (int i = 0; i < n; i++) {
