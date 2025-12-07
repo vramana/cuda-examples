@@ -40,6 +40,8 @@ void zero_init_vector(float *mat, int N) {
 bool compare_vectors(const float *a, const float *b, int n) {
   for (int i = 0; i < n; i++) {
     std::printf("Comparing %d element: %f, %f", i, a[i], b[i]);
+    std::cout << "\n";
+
     if (std::abs(a[i]-b[i]) > 0.001) {
       return false;
     }
