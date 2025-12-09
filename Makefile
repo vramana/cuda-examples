@@ -18,3 +18,6 @@ clean:
 
 jupyter:
 	uv run --with jupyter jupyter lab --allow-root --no-browser --NotebookApp.token=''
+
+push:
+	jj commit -m "Fix" && jj tug && jj git push
