@@ -1,4 +1,5 @@
 #include <cmath>
+#include <vector>
 #include <cstdio>
 #include <cstdlib>
 #include <cuda_runtime.h>
@@ -18,8 +19,13 @@
     } while (0)
 
 int main() {
-    constexpr int numElements = 1 << 4;  // 1,048,576 elements
-    constexpr size_t bytes = numElements * sizeof(float);
+    std::vector<int> SIZE = {128, 256, 512, 1024, 2048, 4096, 8192};
+    int m, n, k, max_size;
+    max_size = SIZE[SIZE.size() - 1];
+
+    size_t bytes = max_size * sizeof(float);
+
+    std::count << "Max: " << max_size << std::endl;
 
     cublasHandle_t handle;
 
@@ -36,13 +42,14 @@ int main() {
         return EXIT_FAILURE;
     }
 
-    randomize_vector(h_a, numElements);
-    randomize_vector(h_b, numElements);
-    zero_init_vector(h_c, numElements);
-    zero_init_vector(h_d, numElements);
+    cudaEvent_t beg, end;
+    cudaCreateEvent(&beg);
+    cudeCreateEvent(&end);
 
-    print_vector(h_a, numElements);
-    print_vector(h_b, numElements);
+    randomize_vector(h_a, max_size);
+    randomize_vector(h_b, max_size);
+    randomize_vector(h_c, max_size);
+    randomize_vector(h_d, max_size);
 
     std::printf("initialization complete\n");
 
@@ -56,36 +63,61 @@ int main() {
     // Copy input data to the GPU.
     CUDA_CHECK(cudaMemcpy(d_a, h_a, bytes, cudaMemcpyHostToDevice));
     CUDA_CHECK(cudaMemcpy(d_b, h_b, bytes, cudaMemcpyHostToDevice));
+    CUDA_CHECK(cudaMemcpy(d_b, h_b, bytes, cudaMemcpyHostToDevice));
+
 
     std::printf("launch kernels\n");
 
     // Launch kernel with one thread per element.
-    run_vector_add_naive(d_a, d_b, d_c, numElements);
-    run_vector_add_cublas(handle, d_a, d_b, d_d, numElements);
 
-    std::printf("completed kernels\n");
+    int repeat_times = 50;
+    std::vector<float> timings = {};
 
-    // Copy the result back to host.
-    CUDA_CHECK(cudaMemcpy(h_c, d_c, bytes, cudaMemcpyDeviceToHost));
-    CUDA_CHECK(cudaMemcpy(h_d, d_d, bytes, cudaMemcpyDeviceToHost));
+    for (int size: SIZE) {
+      run_vector_add_naive(d_a, d_b, d_c, SIZE[0]);
+      run_vector_add_cublas(handle, d_a, d_b, d_d, SIZE[0]);
 
-    std::printf("verify results\n");
+      std::printf("completed kernels\n");
 
-    // Verify results.
-    bool allOk = compare_vectors(h_c, h_d, numElements);
+      // Copy the result back to host.
+      CUDA_CHECK(cudaMemcpy(h_c, d_c, bytes, cudaMemcpyDeviceToHost));
+      CUDA_CHECK(cudaMemcpy(h_d, d_d, bytes, cudaMemcpyDeviceToHost));
 
-    if (allOk) {
-        std::printf("Vector addition was successful!\n");
+      std::printf("verify results\n");
+
+      // Verify results.
+      bool allOk = compare_vectors(h_c, h_d, SIZE[0]);
+
+      if (allOk) {
+          std::printf("Vector addition was successful!\n");
+      }
+
+      cudaEventRecord(beg);
+      for (int i = 0; i < repeat_times; i++) {
+        run_vector_add_naive(d_a, d_b, d_c, size);
+      }
+      cudaEventRecord(end);
+      cudaEventSynchronize(beg);
+      cudaEventSynchronize(end);
+
+      float elapsed_time = 0;
+
+      cudaEventElapsedTime(&elapsed_time, beg, end);
+
+      timings.push_back(elapsed_time / 1000.0);
+
+      printf("size: %d, timing: %f\n", size, elapsed_time / 1000.0);
     }
 
     // Cleanup.
     CUDA_CHECK(cudaFree(d_a));
     CUDA_CHECK(cudaFree(d_b));
     CUDA_CHECK(cudaFree(d_c));
+    CUDA_CHECK(cudaFree(d_d));
     std::free(h_a);
     std::free(h_b);
     std::free(h_c);
-
+    std::free(h_d);
 
     cublasDestroy(handle);
 
