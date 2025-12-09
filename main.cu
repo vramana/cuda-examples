@@ -94,7 +94,7 @@ int main() {
 
       cudaEventRecord(beg);
       for (int i = 0; i < repeat_times; i++) {
-        run_vector_add_naive(d_a, d_b, d_c, size);
+        run_vector_add_cublas(d_a, d_b, d_c, size);
       }
       cudaEventRecord(end);
       cudaEventSynchronize(beg);
