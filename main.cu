@@ -25,7 +25,7 @@ int main() {
 
     size_t bytes = max_size * sizeof(float);
 
-    std::count << "Max: " << max_size << std::endl;
+    std::cout << "Max: " << max_size << std::endl;
 
     cublasHandle_t handle;
 
@@ -43,8 +43,8 @@ int main() {
     }
 
     cudaEvent_t beg, end;
-    cudaCreateEvent(&beg);
-    cudeCreateEvent(&end);
+    cudaEventCreate(&beg);
+    cudaEventCreate(&end);
 
     randomize_vector(h_a, max_size);
     randomize_vector(h_b, max_size);
